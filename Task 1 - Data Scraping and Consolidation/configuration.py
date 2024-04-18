@@ -12,13 +12,25 @@ import pandas as pd
 import os
 import time
 
+# Set maximum number of columns to display
+pd.set_option("display.max_columns", 100)
 
+# CSS selector for district-wise data
 district_wise_selector = ".btn_segmented_container.MuiBox-root.css-0 button:not(.active)"
+
+# Base directory path
 base_path = os.getcwd()
-os.makedirs(os.path.join(base_path, "Data"),exist_ok=True)
+
+# Create 'Data' directory if not exists
+os.makedirs(os.path.join(base_path, "Data"), exist_ok=True)
+
+# Directory path for storing data
 data_dir = os.path.join(base_path, "Data")
+
+# Base URL for the soil health data website
 base_url = "https://soilhealth.dac.gov.in/piechart"
 
+# List of Indian states
 indian_state = [
     "ANDAMAN AND NICOBAR ISLANDS", "ANDHRAPRADESH", "ARUNACHAL PRADESH", "ASSAM",
     "BIHAR", "CHANDIGARH", "CHHATTISGARH", "DELHI", "GOA", "GUJARAT", "HARYANA", "HIMACHAL PRADESH",
@@ -27,23 +39,3 @@ indian_state = [
     "RAJASTHAN", "SIKKIM", "TAMILNADU", "TELANGANA", "THE DADRA AND NAGAR HAVELI AND DAMAN AND DIU",
     "TRIPURA", "UTTAR PRADESH", "UTTARAKHAND", "WEST BENGAL"
 ]
-# Example column names for the two header rows
-header_row1_macronutrient_table = ['', 'Nitrogen', 'Nitrogen', 'Nitrogen', 'Phosphorous', 'Phosphorous', 'Phosphorous',
-                                   'Potassium', 'Potassium', 'Potassium', 'OC', 'OC', 'EC', 'EC', 'pH', 'pH', 'pH']
-header_row2_macronutrient_table = ['District', 'High', 'Medium', 'Low', 'High', 'Medium', 'Low', 'High', 'Medium', 'Low',
-                                   'Sufficient', 'Deficient', 'Saline', 'Non Saline', 'Acidic', 'Neutral', 'Alkaline']
-
-# Create a multi-level column index
-multiindex_columns_macronutrient_table = pd.MultiIndex.from_arrays(
-    [header_row1_macronutrient_table, header_row2_macronutrient_table])
-
-
-# Example column names for the two header rows
-header_row1_micronutrient_table = ['', 'Copper', 'Copper', 'Boron', 'Boron', 'Sulphur', 'Sulphur',
-                                   'Sulphur', 'Iron', 'Iron', 'Zinc', 'Zinc', 'Manganese', 'Manganese']
-header_row2_micronutrient_table = ['District', 'Sufficient', 'Deficient', 'Sufficient', 'Deficient', 'High', 'Medium', 'Low',
-                                   'Sufficient', 'Deficient', 'Sufficient', 'Deficient', 'Sufficient', 'Deficient']
-
-# Create a multi-level column index
-multiindex_columns_micronutrient_table = pd.MultiIndex.from_arrays(
-    [header_row1_micronutrient_table, header_row2_micronutrient_table])

@@ -1,10 +1,38 @@
 from configuration import *
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from bs4 import BeautifulSoup
+from selenium import webdriver
+import os
 
 def get_soup(html_content):
+    """
+    Returns BeautifulSoup object for provided HTML content.
+
+    Args:
+        html_content (str): HTML content to parse.
+
+    Returns:
+        BeautifulSoup: Parsed BeautifulSoup object.
+    """
     return BeautifulSoup(html_content, 'lxml')
 
 
 def scrap_data(html_content):
+    """
+    Scrapes data from HTML content and returns a list of rows.
+
+    Args:
+        html_content (str): HTML content to scrape data from.
+
+    Returns:
+        list: List of lists containing scraped data.
+    """
     soup = get_soup(html_content)
     main_content = soup.find("div", class_='main_container')
     grid_container = main_content.find(
@@ -21,11 +49,20 @@ def scrap_data(html_content):
 
 
 def create_dataframe(data, desired_state, table):
-    columns = multiindex_columns_macronutrient_table if table == "tab-1" else multiindex_columns_micronutrient_table
-    df_ = pd.DataFrame(data, columns=columns)
+    """
+    Creates a DataFrame from scraped data and saves it as a CSV file.
+
+    Args:
+        data (list): List of lists containing scraped data.
+        desired_state (str): Desired state for which data is scraped.
+        table (str): Identifier for the table (macro or micro nutrient).
+
+    Returns:
+        None
+    """
+    df_ = pd.DataFrame(data)
     state_dir = os.path.join(data_dir, desired_state)
     os.makedirs(state_dir, exist_ok=True)
-
     if table == "tab-1":
         report_dir = os.path.join(state_dir, "MacroNutrient")
     else:
@@ -34,15 +71,26 @@ def create_dataframe(data, desired_state, table):
     os.makedirs(report_dir, exist_ok=True)
 
     if table == "tab-1":
-        file_name = 'MacroNutrient.xlsx'
+        file_name = 'MacroNutrient.csv'
     else:
-        file_name = 'MicroNutrient.xlsx'
-
-    df_.to_excel(os.path.join(report_dir, file_name), engine='openpyxl', index=True)
+        file_name = 'MicroNutrient.csv'
+    df_.to_csv(os.path.join(report_dir, file_name), index=False)
 
 
 def process_table(driver, desired_state, table_id, selector, wait):
-    
+    """
+    Processes table data for a desired state and saves it as a CSV file.
+
+    Args:
+        driver: Selenium WebDriver instance.
+        desired_state (str): Desired state for which data is processed.
+        table_id (str): Identifier for the table (macro or micro nutrient).
+        selector (str): CSS selector for district-wise data.
+        wait: WebDriverWait instance.
+
+    Returns:
+        None
+    """
     click_button = driver.find_element(By.ID, table_id)
     click_button.click()
     wait.until(EC.presence_of_element_located((By.ID, table_id)))
@@ -70,6 +118,12 @@ def process_table(driver, desired_state, table_id, selector, wait):
 
 
 def main():
+    """
+    Main function to iterate through Indian states and scrape data for each state.
+
+    Returns:
+        None
+    """
     for desired_state in indian_state:
         print("desired_state: ", desired_state)
         if desired_state != "ANDAMAN AND NICOBAR ISLANDS":
@@ -82,7 +136,7 @@ def main():
                 wait = WebDriverWait(driver, 10)
                 wait.until(EC.presence_of_element_located((By.ID, "root")))
                 process_table(driver, desired_state, "tab-1", district_wise_selector, wait)
-                process_table(driver, desired_state, "tab-2", district_wise_selector,wait)
+                process_table(driver, desired_state, "tab-2", district_wise_selector, wait)
                 driver.quit()
             except Exception as e:
                 print(e)
@@ -95,8 +149,8 @@ def main():
                 driver.get(base_url)
                 wait = WebDriverWait(driver, 10)
                 wait.until(EC.presence_of_element_located((By.ID, "root")))
-                process_table(driver, desired_state, "tab-1", district_wise_selector,wait)
-                process_table(driver, desired_state, "tab-2", district_wise_selector,wait)
+                process_table(driver, desired_state, "tab-1", district_wise_selector, wait)
+                process_table(driver, desired_state, "tab-2", district_wise_selector, wait)
                 driver.quit()
             except Exception as e:
                 print(e)

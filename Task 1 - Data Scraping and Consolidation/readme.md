@@ -14,7 +14,7 @@ To get started with this project, follow these steps:
 1. Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/kalsep/soil-health-data-scraping.git
+git clone https://github.com/kalsep/ISB-Data-Engineering-Intersnship.git
 ```
 
 2. Install the required dependencies:

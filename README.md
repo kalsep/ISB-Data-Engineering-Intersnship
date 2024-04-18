@@ -1,2 +1,0 @@
-# ISB-Data-Engineering-Intersnship
- 
